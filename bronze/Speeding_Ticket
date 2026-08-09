@@ -1,0 +1,66 @@
+#include <iostream>
+#include <tuple>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+    freopen("speeding.in", "r", stdin);
+    freopen("speeding.out", "w", stdout);
+    int n, m;
+    cin >> n >> m;
+    vector<tuple<int, int, int>> road;
+    vector<tuple<int, int, int>> bessie;
+    int counter{}; // counter simulates the positions, start, end of the road
+    //               this makes it easy too simulate later
+    for (int i{}; i < n; ++i)
+    {
+        int a, b;
+        cin >> a >> b;
+        road.push_back({counter, counter + a, b});
+        counter += a;
+    }
+    int counter1{};
+
+    for (int i{}; i < m; ++i)
+    {
+        int a, b;
+        cin >> a >> b;
+        bessie.push_back({counter1, counter1 + a, b});
+        counter1 += a;
+    }
+    int worst{};
+
+    for (int i{}; i < m; ++i)
+    {
+        int cpos = get<0>(bessie[i]);
+        int end = get<1>(bessie[i]);
+        int speed = get<2>(bessie[i]);
+        for (int j{}; j < n; ++j)
+        {
+            int roadbegin = get<0>(road[j]);
+            int roadend = get<1>(road[j]);
+            int roadspeed = get<2>(road[j]);
+
+            if (roadbegin <= cpos && roadend > cpos)
+            {
+                if (roadend < end)
+                {
+                    cpos += (roadend - cpos);
+                }
+                else
+                {
+                    cpos += (end - cpos);
+                }
+                worst = max(worst, (speed - roadspeed));
+            }
+
+            if (cpos == end)
+            {
+                break;
+            }
+        }
+    }
+    cout << worst;
+}
