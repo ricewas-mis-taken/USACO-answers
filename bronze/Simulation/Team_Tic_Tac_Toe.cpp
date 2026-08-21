@@ -2,14 +2,11 @@
 using namespace std;
 
 typedef long long ll;
-typedef unsigned long long ull;
-typedef long double ld;
 typedef vector<int> vi;
-typedef vector<long long> vll;
 typedef pair<int, int> pii;
-typedef pair<long long, long long> pll;
 typedef vector<pair<int, int>> vpii;
 typedef vector<vector<int>> vvi;
+typedef set<int> si;
 
 #define pb push_back
 #define mp make_pair
@@ -22,12 +19,12 @@ int main()
 {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL);
+
 	freopen("tttt.in", "r", stdin);
 	freopen("tttt.out", "w", stdout);
-	vector<vector<int>> p = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
-	// ^^ this vector includes the 8 possible ways you can get 3 in a row, useful for calculating single and paired cow wins
-	vector<char> cows;
+	vvi p = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}}; // the 8 possible ways to make 3 in a row
 
+	vector<char> cows;
 	for (int i{}; i < 9; ++i)
 	{
 		char temp;
@@ -36,111 +33,63 @@ int main()
 	}
 
 	int singlewin{};
-	set<char> singletest = {cows.begin(), cows.end()}; // find out how many cows there are, will be subtracted from to make sure a cow doesn't singularly win twice
+	set<char> singletest = {cows.begin(), cows.end()}; // has a list of each unique letter, to keep track of cows that haven't won
+
 	for (int i{}; i < p.size(); ++i)
 	{
 		char x = cows[p[i][0]];
 		char y = cows[p[i][1]];
 		char z = cows[p[i][2]];
-		if (x == y && y == z && x == z)
+		if (x == y && y == z)
 		{
-			for (int j{}; j < 9; ++j)
+			if (singletest.count(x))
 			{
-				char test = cows[j];
-
-				if (singletest.count(test))
-				{
-					if (test == x)
-					{
-						singlewin++;
-						singletest.erase(test);
-					}
-				}
+				singlewin++;
+				singletest.erase(x);
 			}
 		}
 	}
+
 	int doublewin{};
-	vpii doubledone; // a vector to record pairs that have already won
+	vector<pair<char, char>> doublecheck; // to keep track of pairs of cows that have already won
+
 	for (int i{}; i < 9; ++i)
 	{
 		for (int j{}; j < 9; ++j)
 		{
 			char first = cows[i];
 			char second = cows[j];
-			if (first <= second) // pairs cannot be the same
+			if (first <= second) // make sure first isn't the same as second, note i<=j does NOT work
 			{
 				continue;
 			}
-			bool checker{true};
-			for (int k{}; k < doubledone.size(); ++k) // check to make sure that the pair hasn't already won
-			{
 
-				if ((first == doubledone[k].fi && second == doubledone[k].se) || (first == doubledone[k].se && second == doubledone[k].first))
+			for (int k{}; k < doublecheck.size(); ++k) // making sure pair hasn't already won
+			{
+				if ((first == doublecheck[k].first && second == doublecheck[k].second) || (first == doublecheck[k].second && second == doublecheck[k].first))
 				{
-					checker = false;
+					goto end;
 				}
 			}
-			if (checker)
+
+			for (int k{}; k < 8; ++k)
 			{
-				for (int k{}; k < p.size(); ++k)
+				char x = cows[p[k][0]];
+				char y = cows[p[k][1]];
+				char z = cows[p[k][2]];
+
+				int firstcheck = (x == first) + (y == first) + (z == first);	 // how many x matches, should be either 1 or 2
+				int secondcheck = (x == second) + (y == second) + (z == second); // how many y matches, should be either 1 or 2
+
+				if ((firstcheck == 2 && secondcheck == 1) || (firstcheck == 1 && secondcheck == 2)) // only in these specific orderings do the cows win
 				{
-					char x = cows[p[k][0]];
-					char y = cows[p[k][1]];
-					char z = cows[p[k][2]];
-					if (x == y && y == z && x == z)
-					{
-						continue;
-					}
-					bool firstshow{};
-					bool secondshow{};
-					bool confirmed{};
-					if (x == first || y == first || z == first)
-					{
-						firstshow = true;
-					}
-					if (x == second || y == second || z == second)
-					{
-						secondshow = true;
-					}
-
-					// an extremely inefficent way to check for pairs
-					if (firstshow && secondshow)
-					{
-
-						if (x == y && x == first && z == second)
-						{
-							confirmed = true;
-						}
-						else if (x == z && x == first && y == second)
-						{
-							confirmed = true;
-						}
-						else if (y == z && y == first && x == second)
-						{
-							confirmed = true;
-						}
-						else if (x == y && x == second && z == first)
-						{
-							confirmed = true;
-						}
-						else if (x == z && x == second && y == first)
-						{
-							confirmed = true;
-						}
-						else if (y == z && y == second && x == first)
-						{
-							confirmed = true;
-						}
-
-						if (confirmed)
-						{
-							doublewin++;
-							doubledone.pb({first, second});
-							break;
-						}
-					}
+					++doublewin;
+					doublecheck.pb({first, second});
+					break;
 				}
 			}
+
+		end:;
 		}
 	}
 	cout << singlewin << "\n"
