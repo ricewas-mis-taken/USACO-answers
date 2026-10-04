@@ -1,0 +1,49 @@
+
+// from https://judge.yosupo.jp/problem/associative_array
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef vector<int> vi;
+typedef pair<int, int> pii;
+typedef vector<pair<int, int>> vpii;
+typedef vector<vector<int>> vvi;
+typedef set<int> si;
+
+#define pb push_back
+#define mp make_pair
+#define all(x) (x).begin(), (x).end()
+#define sz(x) (int)(x).size()
+#define fi first
+#define se second
+
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    int queries;
+    cin >> queries;
+
+    map<ll, ll> m; // make sure to use ll!
+
+    for (int i{}; i < queries; ++i)
+    {
+        int x;
+        cin >> x;
+
+        if (x == 0)
+        {
+            ll k, v;
+            cin >> k >> v;
+            m[k] = v;
+        }
+        else
+        {
+            ll k;
+            cin >> k;
+            cout
+                << m[k] << "\n";
+        }
+    }
+}
