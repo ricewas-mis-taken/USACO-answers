@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+typedef vector<int> vi;
+typedef pair<int, int> pii;
+typedef vector<pair<int, int>> vpii;
+typedef vector<vector<int>> vvi;
+typedef set<int> si;
+
+#define pb push_back
+#define mp make_pair
+#define all(x) (x).begin(), (x).end()
+#define sz(x) (int)(x).size()
+#define fi first
+#define se second
+
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    map<string, int> animals;
+    animals["Ox"] = 0; // write out all 12 of the zodiac signs for easy calculation later
+    animals["Tiger"] = 1;
+    animals["Rabbit"] = 2;
+    animals["Dragon"] = 3;
+    animals["Snake"] = 4;
+    animals["Horse"] = 5;
+    animals["Goat"] = 6;
+    animals["Monkey"] = 7;
+    animals["Rooster"] = 8;
+    animals["Dog"] = 9;
+    animals["Pig"] = 10;
+    animals["Rat"] = 11;
+    int n;
+    cin >> n;
+    map<string, int> cows; // use map for easy indexing and referenceing
+    cows["Bessie"] = 0;
+
+    for (int i{}; i < n; ++i)
+    {
+        string first, position, zodiac, second, throwaway; // use throwaway as a string you just plug unneeded values into
+        cin >> first >> throwaway >> throwaway >> position >> zodiac >> throwaway >> throwaway >> second;
+        int secondzodiac = ((cows[second] % 12) + 12) % 12; // use this to find which animal, need to plus 12 because could be negative and throw everything off
+        if (position == "next")
+        {
+            if (animals[zodiac] - secondzodiac <= 0) // has two different cases, one where you need to subtract from 12
+            {
+                cows[first] = (cows[second] + (12 - abs(secondzodiac - animals[zodiac]))); // here
+            }
+            else
+            {
+                cows[first] = (cows[second] + abs(secondzodiac - animals[zodiac]));
+            }
+        }
+        else
+        {
+            if (secondzodiac - animals[zodiac] <= 0) // same thing, two different cases
+            {
+                cows[first] = (cows[second] - (12 - abs(secondzodiac - animals[zodiac])));
+            }
+            else
+            {
+                cows[first] = (cows[second] - (abs(secondzodiac - animals[zodiac])));
+            }
+        }
+    }
+    cout << abs(cows["Elsie"]);
+}
